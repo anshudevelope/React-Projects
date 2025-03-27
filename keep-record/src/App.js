@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
@@ -23,6 +25,11 @@ function App() {
   }
 
 
+  const removeItem = (index) => {
+    let arr = data;
+    arr.splice(index, 1);
+    setData([...arr]);
+  }
 
 
   return (
@@ -53,6 +60,19 @@ function App() {
           <h4>Email</h4>
           <h4>Remove</h4>
         </div>
+        {
+          data.map((e, index) => {
+            return (
+              <div key={index} className='data-value'>
+                <h4>{e.name}</h4>
+                <h4>{e.email}</h4>
+                <IconButton onClick={() => removeItem(index)} color="primary" aria-label="delete" size="large">
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            )
+          })
+        }
 
       </div>
     </div>
