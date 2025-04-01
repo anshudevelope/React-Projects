@@ -121,5 +121,16 @@ form input{
   font-size: 18px;
   border-radius: 5px;
   border: 1px solid #131842;
-  margin-bottom: 25px;
+}
+
+form span{
+  margin-bottom: 20px;
+
+}
+
+
+/* Error msg styling */
+
+.errorMsg{
+  color: rgb(255, 0, 0)
 }
