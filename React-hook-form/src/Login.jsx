@@ -13,7 +13,7 @@ function Login() {
             <div className="form-container">
                 <div className="form-toggle">
                     <button className={isLogin ? 'active' : ""} onClick={() => setIsLogin(true)}>Login</button>
-                    <button className={!isLogin ? 'active' : ""} onClick={() => setIsLogin(false)}>Signup</button>
+                    <button className={!isLogin ? 'active' : ""} onClick={() => setIsLogin(false)}>Sign up</button>
                 </div>
                 {isLogin ? <>
 
@@ -29,7 +29,7 @@ function Login() {
                     <>
 
                         <div className="form">
-                            <h2>Login Form</h2>
+                            <h2>Sign up Form</h2>
                             <input type="email" placeholder="Email" />
                             <input type="password" placeholder="Password" />
                             <input type="password" placeholder="Confirm Password" />
