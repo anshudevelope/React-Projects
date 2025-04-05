@@ -1,0 +1,13 @@
+.heading{
+  text-align: center;
+  text-decoration: underline;
+  color: brown;
+}
+
+ul{
+  text-align: center;
+}
+
+ul li{
+  list-style-type: none;
+}
