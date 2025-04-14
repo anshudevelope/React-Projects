@@ -17,7 +17,7 @@ const CreateStudentData = () => {
     e.preventDefault();
     const studentData = {id, name, place, phone};
 
-    fetch('http://localhost:3000/student', {
+    fetch('http://localhost:8000/student', {
       method: 'POST',
       headers: {
         "content-type": "application/json"
@@ -55,7 +55,7 @@ const CreateStudentData = () => {
         {phone.length == 0 && validation && <span className='errorMsg'>Please enter your phone</span>}
       
 
-      <div>
+      <div className='action-btn'>
         <button className="btn btn-add">Save</button>
         <Link to="/" className='btn btn-primary'>Back</Link>
       </div>

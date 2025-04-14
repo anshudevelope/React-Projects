@@ -102,6 +102,10 @@ tr:hover{
   justify-items: center;
 }
 
+.action-btn{
+  margin-top: 10px;
+}
+
 /* Student data create form styling */
 
 form{

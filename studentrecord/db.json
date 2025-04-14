@@ -1,10 +1,58 @@
 {
-    "student":[
-        {
-            "id":1,
-            "name": "Anshu",
-            "place": "Delhi",
-            "phone": "6386256074"
-        }
-    ]
+  "student": [
+    {
+      "id": "1",
+      "name": "Anshu Maurya",
+      "place": "Delhi",
+      "phone": "6386256074"
+    },
+    {
+      "id": "3",
+      "name": "Princess",
+      "place": "Delhi",
+      "phone": "7502450140"
+    },
+    {
+      "id": "4",
+      "name": "Akash Kumar",
+      "place": "Fatehpur",
+      "phone": "8501527501"
+    },
+    {
+      "id": "5",
+      "name": "Anita",
+      "place": "Korai",
+      "phone": "7586245010"
+    },
+    {
+      "id": "6",
+      "name": "Versha",
+      "place": "Fatehpur",
+      "phone": "7542102353"
+    },
+    {
+      "id": "7",
+      "name": "Shivay",
+      "place": "Fatehpur",
+      "phone": "8525251514"
+    },
+    {
+      "id": "8",
+      "name": "Vansh",
+      "place": "Dubai",
+      "phone": "9578451652"
+    },
+    {
+      "id": "9",
+      "name": "Vikram",
+      "place": "Germany",
+      "phone": "7514658925"
+    },
+    {
+      "id": "52",
+      "name": "Vinita",
+      "place": "Jamaica",
+      "phone": "8562451452"
+    }
+  ]
 }
