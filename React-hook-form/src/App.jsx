@@ -14,7 +14,7 @@ function App() {
                 <div className='col-md-6'>
                   <div className="mb-3">
                     <label className="form-label">Full Name*</label>
-                    <input type="email" className="form-control" placeholder='Please enter your full name' required />
+                    <input type="text" className="form-control" placeholder='Please enter your full name' required />
                   </div>
                 </div>
                 <div className='col-md-6'>
