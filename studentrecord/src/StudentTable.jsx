@@ -32,9 +32,8 @@ export default function StudentTable() {
     useEffect(() => {
         fetch('http://localhost:8000/student')
             .then((res) => res.json())
-            .then((data) =>
-                setStudents(data)).catch((err) =>
-                    console.log(err.message))
+            .then((data) => setStudents(data))
+            .catch((err) => console.log(err.message))
     }, [])
 
 

@@ -1,122 +1,181 @@
-import { useRef, useState } from 'react'
-import './App.css'
+import { useRef, useState } from "react";
+import "./App.css";
+
+const CANVAS_WIDTH = 1280;
+const CANVAS_HEIGHT = 720;
 
 function App() {
+  const [images, setImages] = useState([]);
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(2000);
+  const [bgColor, setBgColor] = useState("#000000");
 
-  const [image, setImage] = useState([]);
-  const [videourl, setVideourl] = useState(null);
   const canvasRef = useRef();
 
-  const handleImgUpload = (e) =>{
+  // Upload images
+  const handleImgUpload = (e) => {
     const files = Array.from(e.target.files);
-    const imageUrls = files.map((file) => URL.createObjectURL(file));
-    setImage(imageUrls);
-    setVideourl(null);
-  }
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setImages((prev) => [...prev, ...urls]);
+  };
 
-  const drawnAnimatedImage = (ctx, img, duration = 2000) => {
+  // Remove image
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
+  // Draw image inside fixed canvas (no overflow)
+  const drawImageContained = (ctx, img, duration) => {
     return new Promise((resolve) => {
       const start = performance.now();
       const canvas = ctx.canvas;
-      const zoomFactor = 1.2;
+      const maxZoom = 1.08;
 
-      function animateTime(time){
-        const elapsed = time - start;
-        const progress = Math.min(elapsed/duration, 1);
-        const scale = 1 + (zoomFactor - 1) * progress;
-        const imgWidth = img.width * scale;
-        const imgHight = img.height * scale;
-        const x = (canvas.width - imgWidth)/2;
-        const y = (canvas.height - imgHight)/2;
+      const scaleToFit = Math.min(
+        canvas.width / img.width,
+        canvas.height / img.height,
+        1
+      );
 
-        ctx.clearRect(0,0, canvas.width, canvas.height);
-        ctx.drawImage(img,x,y, imgWidth, imgHight);
+      function animate(time) {
+        const p = Math.min((time - start) / duration, 1);
+        const zoom = 1 + (maxZoom - 1) * p;
+        const scale = scaleToFit * zoom;
 
-        if(progress < 1){
-          requestAnimationFrame(animateTime);
-        }else{
-          setTimeout(resolve, 300);
+        const w = img.width * scale;
+        const h = img.height * scale;
+
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.globalAlpha = Math.min(p * 2, 1);
+        ctx.drawImage(img, x, y, w, h);
+
+        if (p < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.globalAlpha = 1;
+          resolve();
         }
       }
-      requestAnimationFrame(animateTime);
-    }) 
-  }
+
+      requestAnimationFrame(animate);
+    });
+  };
 
   const genVideo = async () => {
+    setIsGenerating(true);
+    setProgress(0);
+    setVideoUrl(null);
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const width = 640;
-    const height = 480;
-    canvas.width = width;
-    canvas.height = height;
+
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
 
     const stream = canvas.captureStream(30);
     const recorder = new MediaRecorder(stream);
     const chunks = [];
 
-    recorder.ondataavailable = (e)=>{
-      if (e.data.size > 0) chunks.push(e.data);
-    }
-
+    recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
     recorder.onstop = () => {
-      const blob = new Blob(chunks, {type: "video/webm"});
-      const url = URL.createObjectURL(blob);
-      setVideourl(url);
-    }
+      const blob = new Blob(chunks, { type: "video/webm" });
+      setVideoUrl(URL.createObjectURL(blob));
+      setIsGenerating(false);
+    };
 
     recorder.start();
 
-    for (let i = 0; i < image.length; i++) {
+    for (let i = 0; i < images.length; i++) {
       await new Promise((resolve) => {
         const img = new Image();
-        img.src = image[i];
+        img.src = images[i];
         img.onload = async () => {
-          await drawnAnimatedImage(ctx, img, 2000);
+          await drawImageContained(ctx, img, duration);
+          setProgress(Math.round(((i + 1) / images.length) * 100));
           resolve();
-        }
-      })
-      
+        };
+      });
     }
 
-    setTimeout(() => recorder.stop(), image.length * 2000 + 1000);
-
-  }
-
+    recorder.stop();
+  };
 
   return (
-    <div className='app-container'>
-      <h1 className='title'>Image to Video Generator</h1>
-      <input 
-      type="file" 
-      multiple accept='image/*' 
-      className='upload-input' 
-      onChange={handleImgUpload} />
+    <div className="app-container">
+      <h1>Image to Video Generator</h1>
 
-      {image.length > 0 && (
-        <>
-        <h3 className='preview-title'>Preview Images</h3>
-        <div className='preview-container'>
-        {image.map((img, index) => (
-          <img src={img} key={index} className='preview-img' />
-        ))}
+      <input type="file" multiple accept="image/*" onChange={handleImgUpload} />
+
+      {/* Image Preview */}
+      {images.length > 0 && (
+        <div className="preview-container">
+          {images.map((img, i) => (
+            <div key={i} className="preview-box">
+              <img src={img} alt="" />
+              <button onClick={() => removeImage(i)}>✕</button>
+            </div>
+          ))}
         </div>
+      )}
 
-        <button className='generate-btn' onClick={genVideo}>Generate Video</button>
+      {images.length > 0 && (
+        <>
+          <div className="controls">
+            <label>
+              Duration (ms)
+              <input
+                type="number"
+                value={duration}
+                onChange={(e) => setDuration(+e.target.value)}
+              />
+            </label>
+
+            <label>
+              Background
+              <input
+                type="color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+              />
+            </label>
+          </div>
+
+          <button onClick={genVideo} disabled={isGenerating}>
+            {isGenerating ? "Generating..." : "Generate Video"}
+          </button>
         </>
       )}
 
-      <canvas ref={canvasRef} style={{display: 'none'}} ></canvas>
+      {/* Progress */}
+      {isGenerating && (
+        <div className="progress-box">
+          <div className="progress-bar">
+            <div style={{ width: `${progress}%` }}></div>
+          </div>
+          <p>{progress}% completed</p>
+        </div>
+      )}
 
-      {videourl && (
-        <div className='video-section'>
-          <h3>Your Video is here...</h3>
-          <video src={videourl} controls className='video-player'></video><br/>
-          <a href={videourl} download="animated.webm" className='download-btn'>Download Video</a>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+
+      {videoUrl && (
+        <div className="video-section">
+          <video src={videoUrl} controls />
+          <a href={videoUrl} download="video.webm">
+            Download Video
+          </a>
         </div>
       )}
     </div>
-
-  )
+  );
 }
 
-export default App
+export default App;

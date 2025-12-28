@@ -1,12 +1,6 @@
 {
   "student": [
     {
-      "id": "1",
-      "name": "Anshu Maurya",
-      "place": "Delhi",
-      "phone": "6386256074"
-    },
-    {
       "id": "3",
       "name": "Princess",
       "place": "Delhi",
@@ -53,6 +47,12 @@
       "name": "Vinita",
       "place": "Jamaica",
       "phone": "8562451452"
+    },
+    {
+      "id": "1",
+      "name": "Divyanshi Singh",
+      "place": "Ghaziabad",
+      "phone": "8563527541"
     }
   ]
 }
